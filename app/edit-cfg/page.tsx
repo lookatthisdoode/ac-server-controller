@@ -1,12 +1,12 @@
 "use client";
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useState, FormEvent, ChangeEvent, Suspense } from "react";
 import { readCFG, updateCFG, resetCFG } from "@/lib/actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import dotenv from "dotenv";
 import { Service } from "@/lib/types";
 
-export default function EditCfg() {
+async function EditCfg() {
   dotenv.config();
   const searchParams = useSearchParams();
   const serviceName = (searchParams.get("service") as Service) || "";
@@ -123,5 +123,13 @@ export default function EditCfg() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EditCfg />
+    </Suspense>
   );
 }

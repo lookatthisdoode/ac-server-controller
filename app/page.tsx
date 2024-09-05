@@ -1,9 +1,10 @@
 import Logs from "@/components/logs";
 import ServerControls from "@/components/serverControls";
 import Stats from "@/components/stats";
+import { Server } from "@/lib/types";
 
 export default function Home() {
-  const servers = [
+  const servers: Server[] = [
     {
       name: "Germany",
       serviceRef: "germany",

@@ -88,21 +88,13 @@ export async function fetchStatus(service: Service) {
   try {
     const execAsync = promisify(exec);
 
-    const { stdout, stderr } = await execAsync(
-      `sudo systemctl is-active ${service}`
-    );
+    const { stdout } = await execAsync(`systemctl is-active ${service}`);
     // Trim any extra whitespace
     const status = stdout.trim();
-
-    if (stderr) {
-      throw new Error(stderr.trim());
-    }
     return status;
-  } catch (error: any) {
-    // weird bug, this error contains responce which is correct
+  } catch (error) {
+    // console.log(error);
     if (error.stdout.trim() === "inactive") return "inactive";
-    // Return error message if
-    return `Error: ${error.message}`;
   }
 }
 
@@ -111,14 +103,15 @@ export async function controlServer(action: string, service: Service) {
     const execAsync = promisify(exec);
     const command = `sudo systemctl ${action} ${service}`;
 
-    const { stdout, stderr } = await execAsync(command);
+    const { stderr } = await execAsync(command);
     if (stderr) {
       throw new Error(stderr);
     }
     // if success
     console.log(`${service} ${action}ed`);
     return "success";
-  } catch (error: any) {
-    return `Error: ${error.message}`;
+  } catch (error) {
+    console.log(error);
+    return `Error: cant execure ${action} command`;
   }
 }

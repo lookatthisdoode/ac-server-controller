@@ -2,7 +2,7 @@
 import { controlServer, fetchStatus } from "@/lib/actions";
 import { Server } from "@/lib/types";
 import Link from "next/link";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 export default function ServerControls({ server }: { server: Server }) {
   const [status, setStatus] = useState("Status");
@@ -12,7 +12,7 @@ export default function ServerControls({ server }: { server: Server }) {
 
   const updateStatus = async () => {
     const currentStatus = await fetchStatus(server.serviceRef);
-    setStatus(currentStatus);
+    currentStatus && setStatus(currentStatus);
   };
 
   useEffect(() => {
