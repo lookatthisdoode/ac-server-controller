@@ -1,0 +1,14 @@
+[Unit]
+Description=Logs Server
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ubuntu/assetto-server-controller
+ExecStart=/usr/bin/node logs-server.js
+Restart=always
+User=ubuntu
+Group=your-group
+Environment=PORT=8085
+
+[Install]
+WantedBy=multi-user.target
