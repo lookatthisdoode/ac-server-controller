@@ -1,5 +1,5 @@
 const WebSocket = require("ws");
-const { spawn, exec } = require("child_process");
+const { spawn } = require("child_process");
 const http = require("http");
 
 const server = http.createServer();
@@ -9,7 +9,7 @@ let currentProcess = null;
 
 const startProcess = (service) => {
   if (currentProcess) {
-    currentProcess.kill();
+    currentProcess.kill(); // Try to gracefully terminate the process
   }
 
   // Ensure that journalctl command is properly executed
@@ -32,9 +32,9 @@ const startProcess = (service) => {
     });
   });
 
-  // currentProcess.on("close", (code) => {
-  //   console.log(`Process exited with code ${code}`);
-  // });
+  currentProcess.on("error", (error) => {
+    console.error("Failed to start the process:", error.message);
+  });
 };
 
 wss.on("connection", (ws) => {
@@ -53,7 +53,8 @@ wss.on("connection", (ws) => {
   ws.on("close", () => {
     console.log("Client disconnected");
     if (currentProcess) {
-      currentProcess.kill();
+      currentProcess.kill(); // Try to gracefully terminate the process
+      currentProcess = null; // Ensure the process is set to null
     }
   });
 });

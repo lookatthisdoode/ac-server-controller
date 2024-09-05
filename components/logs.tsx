@@ -8,11 +8,12 @@ export default function Logs() {
   const [activeService, setActiveService] = useState("germany");
   const serverOptions = ["germany", "nurburgring", "japan", "rally"];
   const logWindowRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
+    if (!logsActive) return;
     const socket = new WebSocket("ws://localhost:8085");
 
     socket.onmessage = (event) => {
-      // Concatenate new log entries and trim to the last 1000 entries
       setLogs((prevLogs) => {
         const newLogs = prevLogs.concat(event.data.split("\n"));
         return newLogs.slice(-1000);
@@ -20,20 +21,23 @@ export default function Logs() {
     };
 
     setWs(socket);
-
+    setActiveService("germany");
     return () => {
       socket.close();
+      setWs(null);
     };
-  }, []);
+  }, [logsActive]);
 
   useEffect(() => {
-    // Scroll to bottom whenever logs are updated
     if (logWindowRef.current) {
       logWindowRef.current.scrollTop = logWindowRef.current.scrollHeight;
     }
   }, [logs]);
 
   const toggleLogs = () => {
+    if (logsActive) {
+      setLogs([]);
+    }
     setLogsActive(!logsActive);
   };
 
@@ -47,7 +51,6 @@ export default function Logs() {
 
   return (
     <div className="bg-gray-800 h-full flex flex-col rounded-lg">
-      {/* Controls */}
       <div className="flex h-[10%] gap-2 items-center p-5">
         Logs
         <button
@@ -65,19 +68,21 @@ export default function Logs() {
           ></div>
         </button>
       </div>
-      {/* Window */}
       <div
         ref={logWindowRef}
         className="overflow-y-scroll flex-1 p-5 bg-gray-400 text-black"
       >
         {logsActive &&
-          logs.map((log) => {
-            return <div className="flex">{log}</div>;
-          })}
+          logs.map((log, index) => (
+            <div key={index} className="flex">
+              {log}
+            </div>
+          ))}
       </div>
       <div className="flex h-[10%] w-full justify-around p-5 flex-col md:flex-row">
         {serverOptions.map((service, index) => (
           <button
+            key={index}
             onClick={() => switchServer(service)}
             className={`${activeService === service ? "border-b" : ""}`}
           >

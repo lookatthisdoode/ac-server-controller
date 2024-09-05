@@ -1,8 +1,8 @@
 "use client";
 import { controlServer, fetchStatus } from "@/lib/actions";
+import { Server } from "@/lib/types";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { Server } from "@/app/page";
 
 export default function ServerControls({ server }: { server: Server }) {
   const [status, setStatus] = useState("Status");

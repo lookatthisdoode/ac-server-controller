@@ -2,15 +2,6 @@ import Logs from "@/components/logs";
 import ServerControls from "@/components/serverControls";
 import Stats from "@/components/stats";
 
-export type Server = {
-  name: string;
-  serviceRef: string;
-  link: string;
-  port: number;
-  status: string;
-  logs: boolean;
-};
-
 export default function Home() {
   const servers = [
     {

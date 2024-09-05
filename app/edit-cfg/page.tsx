@@ -4,11 +4,12 @@ import { readCFG, updateCFG, resetCFG } from "@/lib/actions";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import dotenv from "dotenv";
+import { Service } from "@/lib/types";
 
 export default function EditCfg() {
   dotenv.config();
   const searchParams = useSearchParams();
-  const serviceName = searchParams.get("service") || "";
+  const serviceName = (searchParams.get("service") as Service) || "";
 
   const [activeConfigFile, setActiveConfigFile] = useState({
     filename: "",

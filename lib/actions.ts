@@ -4,7 +4,7 @@ import { promisify } from "util";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
-
+import { Service } from "@/lib/types";
 dotenv.config();
 const baseConfigPath = process.env.CONFIG_BASE_PATH || "";
 
@@ -14,32 +14,40 @@ if (!baseConfigPath) {
   );
 }
 
-export async function resetCFG(service: string) {
-  // get path
+export async function resetCFG(service: Service) {
+  const pathToDefault = path.join(baseConfigPath, service, "cfg_backup");
+  const pathToCfg = path.join(baseConfigPath, service, "cfg");
+
+  const execAsync = promisify(exec);
+
   try {
-    const execPromise = promisify(exec);
-    const pathToDefault = path.join(baseConfigPath, service, "cfg_default");
-    const pathToCfg = path.join(baseConfigPath, service, "cfg");
+    // Check if pathToDefault exists
+    if (!fs.existsSync(pathToDefault)) {
+      throw new Error(`Backup directory ${pathToDefault} does not exist`);
+    }
 
     // Remove existing configuration directory
-    // await execPromise(`rm -rf ${pathToCfg}`);
+    await execAsync(`rm -rf ${pathToCfg}`);
 
-    // // Copy default configuration to the target path
-    // await execPromise(`cp -r ${pathToDefault}/* ${pathToCfg}`);
+    // Create a new configuration directory
+    await execAsync(`mkdir -p ${pathToCfg}`);
+
+    // Copy default configuration to the target path
+    await execAsync(`cp -r ${pathToDefault}/* ${pathToCfg}`);
 
     // Return success message
     return { success: true, message: "Configuration reset successfully" };
   } catch (error) {
     // Handle errors and return an error message
-    console.error(`Error resetting configuration: ${error.message}`);
+    console.error(`Error resetting configuration`);
     return {
       success: false,
-      message: `Error resetting configuration: ${error.message}`,
+      message: `Error resetting configuration`,
     };
   }
 }
 
-export async function readCFG(serverName: string, filename: string) {
+export async function readCFG(serverName: Service, filename: string) {
   const configFilePath = path.join(
     baseConfigPath,
     serverName,
@@ -76,7 +84,7 @@ export async function updateCFG(
   }
 }
 
-export async function fetchStatus(service: string) {
+export async function fetchStatus(service: Service) {
   try {
     const execAsync = promisify(exec);
 
@@ -98,7 +106,7 @@ export async function fetchStatus(service: string) {
   }
 }
 
-export async function controlServer(action: string, service: string) {
+export async function controlServer(action: string, service: Service) {
   try {
     const execAsync = promisify(exec);
     const command = `sudo systemctl ${action} ${service}`;
