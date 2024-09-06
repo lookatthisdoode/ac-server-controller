@@ -3,8 +3,10 @@
 import { getSystemDetails } from "@/lib/system";
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useState } from "react";
+import ReactSpeedometer from "react-d3-speedometer";
 
 type SystemDetails = {
+  os: string;
   cpuUsage: string[];
   memoryUsage: {
     total: number;
@@ -19,7 +21,19 @@ export default function Stats() {
   useEffect(() => {
     const fetchSystemDetails = async () => {
       const details = await getSystemDetails(); // Fetch system details from server
-      setSystem(details); // Set the state with fetched details
+
+      // Calculate average CPU usage
+      const cpuUsageNumbers = details.cpuUsage.map(Number);
+      const averageCpuUsage = (
+        cpuUsageNumbers.reduce((acc, usage) => acc + usage, 0) /
+        cpuUsageNumbers.length
+      ).toFixed(1); // Calculate average and round to 1 decimal place
+
+      // Set the state with the average CPU usage and other details
+      setSystem({
+        ...details,
+        cpuUsage: [averageCpuUsage], // Update CPU usage with average
+      });
     };
 
     fetchSystemDetails(); // Call the async function immediately
@@ -29,36 +43,39 @@ export default function Stats() {
   }, []);
 
   return system ? (
-    <main className="bg-background">
-      {/* Memory Usage Section */}
-      <div className="space-y-2 pb-5">
-        <h3 className="text-lg font-semibold text-foreground">Memory Usage</h3>
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>Used</span>
-          <span>
-            {system.memoryUsage.used.toFixed(2)} /{" "}
-            {system.memoryUsage.total.toFixed(2)} GB
-          </span>
+    <main className="flex flex-col-reverse justify-center h-full items-center">
+      <div className="flex">
+        {/* RAM */}
+        <div>
+          <ReactSpeedometer
+            maxValue={system.memoryUsage.total}
+            value={system.memoryUsage.used}
+            currentValueText="Ram: ${value}gb"
+            maxSegmentLabels={4}
+            valueTextFontSize={"22px"}
+            segments={20}
+            needleColor="red"
+            endColor={"red"}
+            startColor={"white"}
+          />
         </div>
-        <Progress
-          value={(system.memoryUsage.used / system.memoryUsage.total) * 100}
-          className="h-2"
-        />
-      </div>
 
-      {/* CPU Usage Section */}
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-foreground">CPU Usage</h3>
-        {system.cpuUsage.map((usage, index) => (
-          <div key={index} className="space-y-1">
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Core {index}</span>
-              <span>{usage}%</span>
-            </div>
-            <Progress value={parseFloat(usage)} className="h-2" />
-          </div>
-        ))}
+        {/* CPU */}
+        <div>
+          <ReactSpeedometer
+            maxValue={100}
+            value={parseInt(system.cpuUsage[0])}
+            currentValueText="CPU: ${value}%"
+            maxSegmentLabels={0}
+            valueTextFontSize={"22px"}
+            segments={20}
+            needleColor="blue"
+            endColor={"blue"}
+            startColor={"white"}
+          />
+        </div>
       </div>
+      <h1 className="text-2xl py-10">{system.os}</h1>
     </main>
   ) : (
     <p>Loading system details...</p>

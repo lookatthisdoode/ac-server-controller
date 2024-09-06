@@ -27,6 +27,7 @@ export async function getSystemDetails() {
   const usedMem = totalMem - freeMem;
 
   return {
+    os: `${os.type()} ${os.arch()}`,
     cpuUsage,
     memoryUsage: {
       total: parseFloat(bytesToGB(totalMem)),

@@ -1,7 +1,14 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import dotenv from "dotenv";
+dotenv.config();
 
 export default function Logs() {
+  const apiUrl =
+    process.env.ENVIRONMENT === "production"
+      ? "ws://13.48.70.166:8085"
+      : "ws://localhost:8085";
+
   const [logs, setLogs] = useState<string[]>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [logsActive, setLogsActive] = useState(false);
@@ -11,7 +18,7 @@ export default function Logs() {
 
   useEffect(() => {
     if (!logsActive) return;
-    const socket = new WebSocket("ws://localhost:8085");
+    const socket = new WebSocket(apiUrl);
 
     socket.onmessage = (event) => {
       setLogs((prevLogs) => {
