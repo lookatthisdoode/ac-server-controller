@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 export default function Logs() {
   const [logs, setLogs] = useState<string[]>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
-  const [logsActive, setLogsActive] = useState(true);
+  const [logsActive, setLogsActive] = useState(false);
   const [activeService, setActiveService] = useState("germany");
   const serverOptions = ["germany", "nurburgring", "japan", "rally"];
   const logWindowRef = useRef<HTMLDivElement | null>(null);

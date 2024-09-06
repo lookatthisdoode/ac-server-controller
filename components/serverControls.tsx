@@ -70,7 +70,6 @@ export default function ServerControls({ server }: { server: Server }) {
             >
               {/* LOL */}
               {status && `${status[0].toUpperCase()}${status.slice(1)}`}
-              {/* <MdPowerSettingsNew size={25} /> */}
             </button>
           </form>
           <button

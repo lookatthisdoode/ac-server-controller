@@ -1,5 +1,8 @@
+// Server code
+"use server";
 import os from "os";
 
+// Helper function to calculate CPU usage
 function getCpuUsage() {
   const cpus = os.cpus();
   return cpus.map((cpu) => {
@@ -9,29 +12,21 @@ function getCpuUsage() {
   });
 }
 
-// async function getCpuTemp() {
-//   const { stdout } = await execAsync("vcgencmd measure_temp");
-//   // in celsius! OBVIOUSLY!
-//   return parseFloat(stdout.replace("temp=", "").replace("'C", ""));
-// }
-
+// Convert bytes to GB
 function bytesToGB(bytes: number) {
   return (bytes / (1024 * 1024 * 1024)).toFixed(2);
 }
 
+// Function to get system details
 export async function getSystemDetails() {
-  // Get CPU usage
-  const cpuUsage = getCpuUsage();
+  const cpuUsage = getCpuUsage(); // Get CPU usage
 
-  // Get memory info
+  // Get memory information
   const totalMem = os.totalmem();
   const freeMem = os.freemem();
   const usedMem = totalMem - freeMem;
 
-  // const cpuTemp = await getCpuTemp();
-
   return {
-    os,
     cpuUsage,
     memoryUsage: {
       total: parseFloat(bytesToGB(totalMem)),

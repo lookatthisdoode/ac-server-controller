@@ -6,7 +6,58 @@ import Link from "next/link";
 import dotenv from "dotenv";
 import { Service } from "@/lib/types";
 
-async function EditCfg() {
+function Skeleton() {
+  return (
+    <div className="bg-gray-800 rounded-lg p-5 h-[80dvh] flex flex-col">
+      <select
+        name="configselector"
+        id="configselector"
+        className="p-2 text-black my-5 rounded-lg"
+        defaultValue=""
+      >
+        <option disabled value="">
+          Loading
+        </option>
+        <option value="server_cfg.ini">server_cfg.ini</option>
+        <option value="entry_list.ini">entry_list.ini</option>
+        <option value="extra_cfg.yml">extra_cfg.yml</option>
+      </select>
+
+      <form className="flex flex-col h-full overflow-hidden">
+        <textarea
+          spellCheck={false}
+          className="text-black w-full text-[15rem] rounded-lg p-5 flex-1 mb-4 overflow-hidden text-center animate-pulse"
+          name="cfgcontent"
+          value="LOADING"
+        />
+        <div className="flex justify-between">
+          <div className="flex gap-3 items-center">
+            <button
+              className="p-2 border border-slate-400 rounded-md px-2"
+              type="submit"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              className="p-2 border border-slate-400 rounded-md px-2"
+            >
+              <Link href={"/"}>Back</Link>
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className="p-2 border border-slate-400 rounded-md px-2"
+          >
+            Reset To Default
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+function EditCfg() {
   dotenv.config();
   const searchParams = useSearchParams();
   const serviceName = (searchParams.get("service") as Service) || "";
@@ -82,6 +133,7 @@ async function EditCfg() {
         <option value="server_cfg.ini">server_cfg.ini</option>
         <option value="entry_list.ini">entry_list.ini</option>
         <option value="extra_cfg.yml">extra_cfg.yml</option>
+        <option value="csp_extra_options.ini">csp_extra_options.ini</option>
       </select>
 
       {errMessage && <p className="text-red-500">{errMessage}</p>}
@@ -128,7 +180,7 @@ async function EditCfg() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Skeleton />}>
       <EditCfg />
     </Suspense>
   );
