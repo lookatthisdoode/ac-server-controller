@@ -1,11 +1,9 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import dotenv from "dotenv";
-dotenv.config();
 
 export default function Logs() {
   const apiUrl =
-    process.env.ENVIRONMENT === "production"
+    process.env.NEXT_PUBLIC_ENVIRONMENT === "production"
       ? "ws://13.48.70.166:8085"
       : "ws://localhost:8085";
 

@@ -1,7 +1,6 @@
 // Client-side code
 "use client";
 import { getSystemDetails } from "@/lib/system";
-import { Progress } from "@/components/ui/progress";
 import { useEffect, useState } from "react";
 import ReactSpeedometer from "react-d3-speedometer";
 
